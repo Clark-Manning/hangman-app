@@ -1,10 +1,9 @@
 from random_word import RandomWords
 
-# TODO: store guessed letters and display
-
 r = RandomWords()
 INITIAL_LIVES = 6
 
+# RandomWords package has an issue where it returns None sometimes. 
 def get_random_word(min=4, max=10):
     return r.get_random_word(minLength=min, maxLength=max).lower()
  
@@ -23,9 +22,8 @@ def get_word_progess(chosen_word, lives, word_progress=[], user_guess=None):
 def display_word_progress(word_progress):
     print(" ".join(word_progress))
 
+# assimiliate into get_word_progress() so as not to duplicate code
 def store_user_guess(chosen_word, stored_guesses, user_guess):
-    #create list stored_guesses and add user_guess to list when user_guess != current_character
-    # not appending/storing in list like i believe it should - believes stored_guesses to be an object not a list
     len_chosen_word = len(chosen_word)
     add_guess = True
     for i in range(len_chosen_word):
@@ -33,13 +31,11 @@ def store_user_guess(chosen_word, stored_guesses, user_guess):
         if user_guess == current_character:
             add_guess = False
     if add_guess == True:
-        print(stored_guesses)
         stored_guesses.append(user_guess)
-        print(stored_guesses)
-        return stored_guesses
+    return stored_guesses
 
 def display_user_guesses(stored_guesses):
-    print("Current guesses: " + (" ".join(stored_guesses)))
+    print("Current missed guesses: " + (" ".join(stored_guesses)))
 
 def get_user_input(user_input_list):
     while True:
@@ -59,7 +55,12 @@ def get_user_input(user_input_list):
 
 def play_game():
     chosen_word = get_random_word()
-    print(chosen_word)
+
+    # flag for when I want to print the chosen_word before the game starts, i.e for tests
+    test_chosen_word = True
+    if test_chosen_word == True:
+        print(chosen_word)
+
     lives = INITIAL_LIVES
     stored_guesses = []
     user_input_list = [] 
@@ -73,10 +74,11 @@ def play_game():
         user_guess, user_input_list = get_user_input(user_input_list)
         word_progress, lives = get_word_progess(chosen_word, lives, word_progress, user_guess)
         display_word_progress(word_progress)
-        # stored_guesses = store_user_guess(chosen_word, stored_guesses, user_guess)
+        stored_guesses = store_user_guess(chosen_word, stored_guesses, user_guess)
+        display_user_guesses(stored_guesses)
 
     if lives == 0:
-        print("You lost! Try again.")
+        print("You lost! The word was '" + chosen_word + "'. Try again.")
     else:
         print("You won!")
     
